@@ -27,6 +27,7 @@ class CompanyBusinessUnitSalesRepository extends AbstractRepository implements C
     ): CompanyBusinessUnitOrderListTransfer {
         $companyBusinessUnitOrderListTransfer = new CompanyBusinessUnitOrderListTransfer();
         $companyUserReferences = $companyBusinessUnitOrderListRequestTransfer->getCompanyUserReferences();
+        $orderReference = $companyBusinessUnitOrderListRequestTransfer->getOrderReference();
 
         if (count($companyUserReferences) === 0) {
             return $companyBusinessUnitOrderListTransfer->setPagination(
@@ -37,6 +38,10 @@ class CompanyBusinessUnitSalesRepository extends AbstractRepository implements C
         $spySalesOrderQuery = $this->getFactory()
             ->getSalesOrderQuery()
             ->filterByCompanyUserReference_In($companyUserReferences);
+
+        if ($orderReference !== null) {
+            $spySalesOrderQuery->filterByOrderReference($orderReference);
+        }
 
         $salesOrdersCount = $spySalesOrderQuery->count();
 
