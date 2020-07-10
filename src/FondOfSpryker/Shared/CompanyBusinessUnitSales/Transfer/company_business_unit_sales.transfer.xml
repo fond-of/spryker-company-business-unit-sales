@@ -6,8 +6,8 @@
         <property name="idCustomer" type="int"/>
         <property name="idCompanyBusinessUnit" type="int"/>
         <property name="companyUserReferences" type="string[]" singular="companyUserReference"/>
+        <property name="orderReference" type="string"/>
         <property name="filter" type="Filter"/>
-        <property name="orders" type="Order[]" singular="order"/>
     </transfer>
 
     <transfer name="CompanyBusinessUnitOrderList">

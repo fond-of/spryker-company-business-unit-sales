@@ -7,6 +7,7 @@ use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusiness
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Persistence\CompanyBusinessUnitSalesRepositoryInterface;
 use Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer;
 use Generated\Shared\Transfer\CompanyBusinessUnitOrderListTransfer;
+use Generated\Shared\Transfer\OrderTransfer;
 
 class OrderReader implements OrderReaderInterface
 {
@@ -76,15 +77,25 @@ class OrderReader implements OrderReaderInterface
         $orderTransfers = new ArrayObject();
 
         foreach ($companyBusinessUnitOrderListTransfer->getOrders() as $orderTransfer) {
-            $idSalesOrder = $orderTransfer->getIdSalesOrder();
-
-            /*if ($this->omsFacade->isOrderFlaggedExcludeFromCustomer($idSalesOrder)) {
-                continue;
-            }*/
-
-            $orderTransfers->append($this->salesFacade->getOrderByIdSalesOrder($idSalesOrder));
+            $orderTransfers->append($this->expandOrderTransfer($orderTransfer));
         }
 
         return $companyBusinessUnitOrderListTransfer->setOrders($orderTransfers);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\OrderTransfer $orderTransfer
+     *
+     * @return \Generated\Shared\Transfer\OrderTransfer
+     */
+    protected function expandOrderTransfer(OrderTransfer $orderTransfer): OrderTransfer
+    {
+        $idSalesOrder = $orderTransfer->getIdSalesOrder();
+
+        /*if ($this->omsFacade->isOrderFlaggedExcludeFromCustomer($idSalesOrder)) {
+            continue;
+        }*/
+
+        return $this->salesFacade->getOrderByIdSalesOrder($idSalesOrder);
     }
 }
