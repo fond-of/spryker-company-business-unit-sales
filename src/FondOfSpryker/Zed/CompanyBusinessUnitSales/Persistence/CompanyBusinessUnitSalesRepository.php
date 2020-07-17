@@ -62,7 +62,7 @@ class CompanyBusinessUnitSalesRepository extends AbstractRepository implements C
      * @param \Propel\Runtime\ActiveQuery\ModelCriteria $query
      * @param \Generated\Shared\Transfer\FilterTransfer|null $filterTransfer
      *
-     * @return \Orm\Zed\Sales\Persistence\SpySalesOrderQuery
+     * @return \Propel\Runtime\ActiveQuery\ModelCriteria
      */
     protected function applyFilterToQuery(
         ModelCriteria $query,

@@ -9,6 +9,7 @@ class CompanyUserMapper implements CompanyUserMapperInterface
 {
     /**
      * @param \Orm\Zed\CompanyUser\Persistence\Base\SpyCompanyUser $spyCompanyUser
+     *
      * @return \Generated\Shared\Transfer\CompanyUserTransfer
      */
     public function mapCompanyUserEntityToCompanyUserTransfer(

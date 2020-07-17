@@ -2,7 +2,6 @@
 
 namespace FondOfSpryker\Zed\CompanyBusinessUnitSales\Persistence\Propel\Mapper;
 
-use Generated\Shared\Transfer\CompanyBusinessUnitOrderListTransfer;
 use Propel\Runtime\Collection\Collection;
 
 interface SalesOrderMapperInterface
