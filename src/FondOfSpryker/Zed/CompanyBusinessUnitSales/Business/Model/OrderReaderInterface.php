@@ -12,7 +12,7 @@ interface OrderReaderInterface
      *
      * @return \Generated\Shared\Transfer\CompanyBusinessUnitOrderListTransfer
      */
-    public function findByCompanyBusinessUnitOrderList(
+    public function findByCompanyBusinessUnitOrderListRequest(
         CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
     ): CompanyBusinessUnitOrderListTransfer;
 }

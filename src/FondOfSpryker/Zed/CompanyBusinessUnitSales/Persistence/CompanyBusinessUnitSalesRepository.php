@@ -8,6 +8,7 @@ use Generated\Shared\Transfer\CompanyBusinessUnitOrderListTransfer;
 use Generated\Shared\Transfer\CompanyUserTransfer;
 use Generated\Shared\Transfer\FilterTransfer;
 use Generated\Shared\Transfer\PaginationTransfer;
+use Orm\Zed\CompanyUser\Persistence\Map\SpyCompanyUserTableMap;
 use Propel\Runtime\ActiveQuery\ModelCriteria;
 use Spryker\Zed\Kernel\Persistence\AbstractRepository;
 use Spryker\Zed\Propel\PropelFilterCriteria;
@@ -99,5 +100,23 @@ class CompanyBusinessUnitSalesRepository extends AbstractRepository implements C
         return $this->getFactory()
             ->createCompanyUserMapper()
             ->mapCompanyUserEntityToCompanyUserTransfer($spyCompanyUserQuery);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequest
+     *
+     * @return string[]
+     */
+    public function getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+        CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequest
+    ): array {
+        $companyBusinessUnitOrderListRequest->requireIdCompanyBusinessUnit();
+
+        return $this->getFactory()->getCompanyUserQuery()
+            ->filterByFkCompanyBusinessUnit($companyBusinessUnitOrderListRequest->getIdCompanyBusinessUnit())
+            ->filterByIsActive(true)
+            ->select([SpyCompanyUserTableMap::COL_COMPANY_USER_REFERENCE])
+            ->find()
+            ->toArray();
     }
 }

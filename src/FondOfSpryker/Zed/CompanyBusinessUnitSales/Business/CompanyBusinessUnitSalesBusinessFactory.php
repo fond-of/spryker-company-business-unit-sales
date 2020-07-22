@@ -7,6 +7,7 @@ use FondOfSpryker\Zed\CompanyBusinessUnitSales\Business\Model\CompanyUserReaderI
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Business\Model\OrderReader;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Business\Model\OrderReaderInterface;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\CompanyBusinessUnitSalesDependencyProvider;
+use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeInterface;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeInterface;
 use Spryker\Zed\Kernel\Business\AbstractBusinessFactory;
 
@@ -23,6 +24,7 @@ class CompanyBusinessUnitSalesBusinessFactory extends AbstractBusinessFactory
         return new OrderReader(
             $this->createCompanyUserReader(),
             $this->getRepository(),
+            $this->getPermissionFacade(),
             $this->getSalesFacade()
         );
     }
@@ -33,6 +35,14 @@ class CompanyBusinessUnitSalesBusinessFactory extends AbstractBusinessFactory
     protected function createCompanyUserReader(): CompanyUserReaderInterface
     {
         return new CompanyUserReader($this->getRepository());
+    }
+
+    /**
+     * @return \FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeInterface
+     */
+    protected function getPermissionFacade(): CompanyBusinessUnitSalesToPermissionFacadeInterface
+    {
+        return $this->getProvidedDependency(CompanyBusinessUnitSalesDependencyProvider::FACADE_PERMISSION);
     }
 
     /**

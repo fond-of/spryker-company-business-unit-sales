@@ -2,6 +2,7 @@
 
 namespace FondOfSpryker\Zed\CompanyBusinessUnitSales;
 
+use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeBridge;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeBridge;
 use Orm\Zed\CompanyUser\Persistence\Base\SpyCompanyUserQuery;
 use Orm\Zed\Sales\Persistence\Base\SpySalesOrderQuery;
@@ -11,6 +12,7 @@ use Spryker\Zed\Kernel\Container;
 class CompanyBusinessUnitSalesDependencyProvider extends AbstractBundleDependencyProvider
 {
     public const FACADE_SALES = 'FACADE_SALES';
+    public const FACADE_PERMISSION = 'FACADE_PERMISSION';
 
     public const PROPEL_QUERY_SALES_ORDER = 'PROPEL_QUERY_SALES_ORDER';
     public const PROPEL_QUERY_COMPANY_USER = 'PROPEL_QUERY_COMPANY_USER';
@@ -24,6 +26,7 @@ class CompanyBusinessUnitSalesDependencyProvider extends AbstractBundleDependenc
     {
         $container = parent::provideBusinessLayerDependencies($container);
 
+        $container = $this->addPermissionFacade($container);
         $container = $this->addSalesFacade($container);
 
         return $container;
@@ -82,6 +85,17 @@ class CompanyBusinessUnitSalesDependencyProvider extends AbstractBundleDependenc
         $container[static::FACADE_SALES] = static function (Container $container) {
             return new CompanyBusinessUnitSalesToSalesFacadeBridge(
                 $container->getLocator()->sales()->facade()
+            );
+        };
+
+        return $container;
+    }
+
+    protected function addPermissionFacade(Container $container): Container
+    {
+        $container[static::FACADE_PERMISSION] = static function (Container $container) {
+            return new CompanyBusinessUnitSalesToPermissionFacadeBridge(
+                $container->getLocator()->permission()->facade()
             );
         };
 

@@ -26,6 +26,6 @@ class CompanyBusinessUnitSalesFacade extends AbstractFacade implements CompanyBu
     ): CompanyBusinessUnitOrderListTransfer {
         return $this->getFactory()
             ->createOrderReader()
-            ->findByCompanyBusinessUnitOrderList($companyBusinessUnitOrderListRequestTransfer);
+            ->findByCompanyBusinessUnitOrderListRequest($companyBusinessUnitOrderListRequestTransfer);
     }
 }

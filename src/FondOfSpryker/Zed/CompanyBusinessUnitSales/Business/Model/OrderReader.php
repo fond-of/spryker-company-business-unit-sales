@@ -3,6 +3,8 @@
 namespace FondOfSpryker\Zed\CompanyBusinessUnitSales\Business\Model;
 
 use ArrayObject;
+use FondOfSpryker\Zed\CompanyBusinessUnitSales\Communication\Plugin\PermissionExtension\SeeAllCompanyBusinessUnitOrdersPermissionPlugin;
+use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeInterface;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeInterface;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Persistence\CompanyBusinessUnitSalesRepositoryInterface;
 use Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer;
@@ -22,6 +24,11 @@ class OrderReader implements OrderReaderInterface
     protected $repository;
 
     /**
+     * @var \FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeInterface
+     */
+    protected $permissionFacade;
+
+    /**
      * @var \FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeInterface
      */
     protected $salesFacade;
@@ -29,15 +36,18 @@ class OrderReader implements OrderReaderInterface
     /**
      * @param \FondOfSpryker\Zed\CompanyBusinessUnitSales\Business\Model\CompanyUserReaderInterface $companyUserReader
      * @param \FondOfSpryker\Zed\CompanyBusinessUnitSales\Persistence\CompanyBusinessUnitSalesRepositoryInterface $repository
+     * @param \FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeInterface $permissionFacade
      * @param \FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeInterface $salesFacade
      */
     public function __construct(
         CompanyUserReaderInterface $companyUserReader,
         CompanyBusinessUnitSalesRepositoryInterface $repository,
+        CompanyBusinessUnitSalesToPermissionFacadeInterface $permissionFacade,
         CompanyBusinessUnitSalesToSalesFacadeInterface $salesFacade
     ) {
         $this->companyUserReader = $companyUserReader;
         $this->repository = $repository;
+        $this->permissionFacade = $permissionFacade;
         $this->salesFacade = $salesFacade;
     }
 
@@ -46,24 +56,52 @@ class OrderReader implements OrderReaderInterface
      *
      * @return \Generated\Shared\Transfer\CompanyBusinessUnitOrderListTransfer
      */
-    public function findByCompanyBusinessUnitOrderList(
+    public function findByCompanyBusinessUnitOrderListRequest(
         CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
     ): CompanyBusinessUnitOrderListTransfer {
-        $companyUserTransfer = $this->companyUserReader->getActiveByCompanyBusinessUnitOrderListRequest(
+        $companyBusinessUnitOrderListRequestTransfer = $this->expandCompanyBusinessUnitOrderListRequestWithCompanyUserReferences(
             $companyBusinessUnitOrderListRequestTransfer
         );
-
-        if ($companyUserTransfer !== null) {
-            $companyBusinessUnitOrderListRequestTransfer->setCompanyUserReferences(
-                [$companyUserTransfer->getCompanyUserReference()]
-            );
-        }
 
         $companyBusinessUnitOrderListTransfer = $this->repository->searchOrders(
             $companyBusinessUnitOrderListRequestTransfer
         );
 
         return $this->expandOrderTransfersInCompanyBusinessUnitOrderListTransfer($companyBusinessUnitOrderListTransfer);
+    }
+
+    /**
+     * @param \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+     *
+     * @return \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer
+     */
+    protected function expandCompanyBusinessUnitOrderListRequestWithCompanyUserReferences(
+        CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+    ): CompanyBusinessUnitOrderListRequestTransfer {
+        $companyUserTransfer = $this->companyUserReader->getActiveByCompanyBusinessUnitOrderListRequest(
+            $companyBusinessUnitOrderListRequestTransfer
+        );
+
+        if ($companyUserTransfer === null) {
+            return $companyBusinessUnitOrderListRequestTransfer;
+        }
+
+        $canSeeAllCompanyBusinessUnitOrders = $this->permissionFacade->can(
+            SeeAllCompanyBusinessUnitOrdersPermissionPlugin::KEY,
+            $companyUserTransfer->getIdCompanyUser()
+        );
+
+        if (!$canSeeAllCompanyBusinessUnitOrders) {
+            return $companyBusinessUnitOrderListRequestTransfer->setCompanyUserReferences([
+                $companyUserTransfer->getCompanyUserReference(),
+            ]);
+        }
+
+        return $companyBusinessUnitOrderListRequestTransfer->setCompanyUserReferences(
+            $this->companyUserReader->getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+                $companyBusinessUnitOrderListRequestTransfer
+            )
+        );
     }
 
     /**
