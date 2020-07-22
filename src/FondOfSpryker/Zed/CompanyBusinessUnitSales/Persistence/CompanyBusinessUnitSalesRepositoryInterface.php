@@ -25,4 +25,13 @@ interface CompanyBusinessUnitSalesRepositoryInterface
     public function getActiveCompanyUserByCompanyBusinessUnitOrderListRequest(
         CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequest
     ): ?CompanyUserTransfer;
+
+    /**
+     * @param \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequest
+     *
+     * @return string[]
+     */
+    public function getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+        CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequest
+    ): array;
 }

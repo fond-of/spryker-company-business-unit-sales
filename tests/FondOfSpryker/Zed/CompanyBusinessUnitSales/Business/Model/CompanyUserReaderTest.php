@@ -99,4 +99,48 @@ class CompanyUserReaderTest extends Unit
 
         $this->assertEquals(null, $companyUser);
     }
+
+    /**
+     * @return void
+     */
+    public function testGetActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(): void
+    {
+        $companyUserReferences = ['CU1', 'CU2'];
+
+        $this->companyBusinessUnitOrderListRequestTransferMock->expects($this->atLeastOnce())
+            ->method('getIdCompanyBusinessUnit')
+            ->willReturn(1);
+
+        $this->repositoryMock->expects($this->atLeastOnce())
+            ->method('getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest')
+            ->with($this->companyBusinessUnitOrderListRequestTransferMock)
+            ->willReturn($companyUserReferences);
+
+        $this->assertEquals(
+            $companyUserReferences,
+            $this->companyUserReader->getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+                $this->companyBusinessUnitOrderListRequestTransferMock
+            )
+        );
+    }
+
+    /**
+     * @return void
+     */
+    public function testGetActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequestWithoutCompanyBusinessUnitId(): void
+    {
+        $this->companyBusinessUnitOrderListRequestTransferMock->expects($this->atLeastOnce())
+            ->method('getIdCompanyBusinessUnit')
+            ->willReturn(null);
+
+        $this->repositoryMock->expects($this->never())
+            ->method('getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest')
+            ->with($this->companyBusinessUnitOrderListRequestTransferMock);
+
+        $companyUserReferences = $this->companyUserReader->getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+            $this->companyBusinessUnitOrderListRequestTransferMock
+        );
+
+        $this->assertCount(0, $companyUserReferences);
+    }
 }

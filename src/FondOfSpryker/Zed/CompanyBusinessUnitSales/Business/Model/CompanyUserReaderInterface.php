@@ -15,4 +15,13 @@ interface CompanyUserReaderInterface
     public function getActiveByCompanyBusinessUnitOrderListRequest(
         CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
     ): ?CompanyUserTransfer;
+
+    /**
+     * @param \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+     *
+     * @return string[]
+     */
+    public function getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+        CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+    ): array ;
 }

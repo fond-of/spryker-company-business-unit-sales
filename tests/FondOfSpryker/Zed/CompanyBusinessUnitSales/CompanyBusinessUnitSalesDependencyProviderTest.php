@@ -3,9 +3,11 @@
 namespace FondOfSpryker\Zed\CompanyBusinessUnitSales;
 
 use Codeception\Test\Unit;
+use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToPermissionFacadeBridge;
 use FondOfSpryker\Zed\CompanyBusinessUnitSales\Dependency\Facade\CompanyBusinessUnitSalesToSalesFacadeBridge;
 use Spryker\Shared\Kernel\BundleProxy;
 use Spryker\Zed\Kernel\Locator;
+use Spryker\Zed\Permission\Business\PermissionFacadeInterface;
 use Spryker\Zed\Sales\Business\SalesFacadeInterface;
 use Spryker\Zed\Testify\Locator\Business\Container;
 
@@ -25,6 +27,11 @@ class CompanyBusinessUnitSalesDependencyProviderTest extends Unit
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Shared\Kernel\BundleProxy
      */
     protected $bundleProxyMock;
+
+    /**
+     * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Permission\Business\PermissionFacadeInterface
+     */
+    protected $permissionFacadeMock;
 
     /**
      * @var \PHPUnit\Framework\MockObject\MockObject|\Spryker\Zed\Sales\Business\SalesFacadeInterface
@@ -55,6 +62,10 @@ class CompanyBusinessUnitSalesDependencyProviderTest extends Unit
             ->disableOriginalConstructor()
             ->getMock();
 
+        $this->permissionFacadeMock = $this->getMockBuilder(PermissionFacadeInterface::class)
+            ->disableOriginalConstructor()
+            ->getMock();
+
         $this->salesFacadeMock = $this->getMockBuilder(SalesFacadeInterface::class)
             ->disableOriginalConstructor()
             ->getMock();
@@ -73,19 +84,25 @@ class CompanyBusinessUnitSalesDependencyProviderTest extends Unit
 
         $this->locatorMock->expects($this->atLeastOnce())
             ->method('__call')
-            ->with('sales')
+            ->withConsecutive(['permission'], ['sales'])
             ->willReturn($this->bundleProxyMock);
 
         $this->bundleProxyMock->expects($this->atLeastOnce())
             ->method('__call')
             ->with('facade')
-            ->willReturn($this->salesFacadeMock);
+            ->willReturnOnConsecutiveCalls($this->permissionFacadeMock, $this->salesFacadeMock);
 
         $container = $this->companyBusinessUnitSalesDependencyProvider->provideBusinessLayerDependencies(
             $this->containerMock
         );
 
         $this->assertEquals($this->containerMock, $container);
+
+        $this->assertInstanceOf(
+            CompanyBusinessUnitSalesToPermissionFacadeBridge::class,
+            $container[CompanyBusinessUnitSalesDependencyProvider::FACADE_PERMISSION]
+        );
+
         $this->assertInstanceOf(
             CompanyBusinessUnitSalesToSalesFacadeBridge::class,
             $container[CompanyBusinessUnitSalesDependencyProvider::FACADE_SALES]

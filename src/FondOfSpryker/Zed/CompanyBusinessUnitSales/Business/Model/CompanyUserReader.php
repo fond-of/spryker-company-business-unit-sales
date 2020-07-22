@@ -40,4 +40,21 @@ class CompanyUserReader implements CompanyUserReaderInterface
             $companyBusinessUnitOrderListRequestTransfer
         );
     }
+
+    /**
+     * @param \Generated\Shared\Transfer\CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+     *
+     * @return string[]
+     */
+    public function getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+        CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
+    ): array {
+        if ($companyBusinessUnitOrderListRequestTransfer->getIdCompanyBusinessUnit() === null) {
+            return [];
+        }
+
+        return $this->repository->getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
+            $companyBusinessUnitOrderListRequestTransfer
+        );
+    }
 }

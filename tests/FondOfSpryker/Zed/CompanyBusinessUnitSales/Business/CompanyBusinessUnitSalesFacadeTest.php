@@ -71,7 +71,7 @@ class CompanyBusinessUnitSalesFacadeTest extends Unit
             ->willReturn($this->orderReaderMock);
 
         $this->orderReaderMock->expects($this->atLeastOnce())
-            ->method('findByCompanyBusinessUnitOrderList')
+            ->method('findByCompanyBusinessUnitOrderListRequest')
             ->with($this->companyBusinessUnitOrderListRequestTransferMock)
             ->willReturn($this->companyBusinessUnitOrderListTransferMock);
 
