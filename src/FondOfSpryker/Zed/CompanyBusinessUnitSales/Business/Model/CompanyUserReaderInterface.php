@@ -23,5 +23,5 @@ interface CompanyUserReaderInterface
      */
     public function getActiveCompanyUserReferencesByCompanyBusinessUnitOrderListRequest(
         CompanyBusinessUnitOrderListRequestTransfer $companyBusinessUnitOrderListRequestTransfer
-    ): array ;
+    ): array;
 }
